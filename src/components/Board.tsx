@@ -35,7 +35,7 @@ class Board extends React.Component<IBoardProps, IBoardState> {
 
         <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
 
-        <p>Number of attempts: {attempts}</p>
+        <p>Number of attempts: {attempts} / 25</p>
       </div>
     )
   }

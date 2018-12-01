@@ -13,6 +13,12 @@ it('does not flood when the target cell is not next to the flooded region', () =
   expect(floodRegion(new Cell(1,1), board)).toEqual(board)
 });
 
+it('floods the region when the target cell belongs to a region touching the flooded region', () => {
+  const board = [['blue', 'green'], ['purple', 'green']]
+  const result = [['green', 'green'], ['purple', 'green']]
+  expect(floodRegion(new Cell(1,1), board)).toEqual(result)
+});
+
 it('floods the region when cell clicked is further away from seed cell', () => {
   const board = [['blue', 'green'], ['blue', 'red'], ['purple', 'red']]
   const result = [['purple', 'green'], ['purple', 'red'],  ['purple', 'red']]

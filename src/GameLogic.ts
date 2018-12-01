@@ -1,15 +1,24 @@
 function isValidClick(clickedCell: Cell, board: string[][], floodedRegion: Cell[]): boolean {
   const {row, column} = clickedCell
-  const neighborCells = [
+  const clickedRegion = getRegion(board, board[row][column], row, column, [])
+
+  const neighborCells = clickedRegion.reduce(
+    (allNeighbors: Cell[], cell: Cell) => allNeighbors.concat(getNeighborCells(cell)), []
+  )
+  const contains = floodedRegion.filter((cell) =>
+    neighborCells.filter((neighborCell) => neighborCell.equals(cell)).length > 0
+  )
+  return contains.length > 0
+}
+
+function getNeighborCells(cell: Cell) {
+  const { row, column } = cell
+  return [
     new Cell(row + 1, column),
     new Cell(row - 1, column),
     new Cell(row, column + 1),
     new Cell(row, column - 1)
   ]
-  const contains = floodedRegion.filter((cell) =>
-    neighborCells.filter((neighborCell) => neighborCell.equals(cell)).length > 0
-  )
-  return contains.length > 0
 }
 
 function getFloodedRegion(board: string[][]): Cell[] {
