@@ -1,5 +1,7 @@
 import * as React from 'react'
 import './Board.css'
+import {floodRegion, Cell} from '../GameLogic';
+
 
 const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'pink']
 
@@ -18,13 +20,12 @@ class Board extends React.Component<IBoardProps, IBoardState> {
 
     this.state = {
       attempts: 0,
-      boardColours: boardColours(props.size)
+      boardColours: createBoardColours(props.size)
      }
   }
 
   public render() {
     const { attempts, boardColours } = this.state
-
     return (
       <div className="board">
         <div>
@@ -32,22 +33,21 @@ class Board extends React.Component<IBoardProps, IBoardState> {
           <p>Make the whole board the same colour</p>
         </div>
 
-        <TableBody boardColours={boardColours} />
+        <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
 
         <p>Number of attempts: {attempts}</p>
-
-        <button onClick={this.onDecrement}>-</button>
-        <button onClick={this.onIncrement}>+</button>
-
       </div>
     )
   }
 
-  private onIncrement = () => this.updateAttempts(this.state.attempts + 1);
-  private onDecrement = () => this.updateAttempts(this.state.attempts - 1);
+  private onAttempt = (row: number, column: number) => () => {
+    this.updateAttempts(this.state.attempts + 1);
+    const newBoard = floodRegion(new Cell(row, column), this.state.boardColours)
+    this.setState({ boardColours: newBoard })
+  }
 
   private updateAttempts(attempts: number) {
-    this.setState({ attempts });
+    this.setState({ attempts: attempts });
   }
 }
 
@@ -55,11 +55,12 @@ export default Board;
 
 interface ITableBodyProps {
   boardColours: string[][],
+  onAttempt: (row: number, column: number) => () => void
 }
 
-function TableBody ({ boardColours }: ITableBodyProps) {
+function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
   const body = boardColours.map((rowColours: string[], i: number) =>
-    <Row colours={rowColours} key={'Row-' + i}/>
+    <Row colours={rowColours} key={'Row-' + i} row={i} onAttempt={onAttempt}/>
   )
   return <table>
     <tbody>{body}</tbody>
@@ -67,34 +68,39 @@ function TableBody ({ boardColours }: ITableBodyProps) {
 }
 
 interface IRowProps {
-  colours: string[],
+  colours: string[]
+  row: number
+  onAttempt: (row: number, column: number) => () => void
 }
 
-function Row({ colours }: IRowProps) {
+function Row({ colours, row, onAttempt }: IRowProps) {
   const rowCells = colours.map((colour: string, i: number) =>
-    <ColouredCell colour={colour} key={'ColouredCell-' + i}/>
+    <ColouredCell colour={colour} key={'ColouredCell-' + i} row={row} column={i} onAttempt={onAttempt}/>
   )
   return <tr>{rowCells}</tr>
 }
 
 interface IColouredCellProps {
   colour: string
+  row: number
+  column: number
+  onAttempt: (row: number, column: number) => () => void
 }
 
-function ColouredCell({ colour }: IColouredCellProps) {
+function ColouredCell({ colour, row, column, onAttempt }: IColouredCellProps) {
   const style = {
     backgroundColor: colour
   }
-  return <td className="cell" style={style}></td>
+  return <td className="cell" style={style} onClick={onAttempt(row, column)}></td>
 }
 
 // helpers
-const boardColours: (size: number) => string[][] = (size) =>
+const createBoardColours: (size: number) => string[][] = (size) =>
   Array(size).fill('').map(() => boardRow(size))
 
 const boardRow = (size: number) => Array(size).fill('').map(() => randomColour())
 
-const randomColour = () => colours[randomIntFromInterval(0, colours.length)]
+const randomColour = () => colours[randomIntFromInterval(0, colours.length - 1)]
 
 const randomIntFromInterval = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min)
