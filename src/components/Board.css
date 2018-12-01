@@ -1,15 +1,8 @@
 .board {
   text-align: center;
   margin: 20px;
-  font-size: 48px;
+  font-size: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.board button {
-  margin-left: 25px;
-  margin-right: 25px;
-  font-size: 40px;
-  min-width: 50px;
 }
 
 .board table {
@@ -18,9 +11,6 @@
 }
 
 .cell {
-  background-color: blue;
-  min-width: 50px;
   width: 50px;
   height: 50px;
-  min-height: 50px;
 }
