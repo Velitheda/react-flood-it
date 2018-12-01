@@ -1,6 +1,6 @@
 
 //import * as React from 'react';
-import {floodRegion, getRegion, hasWon, Cell} from '../GameLogic';
+import {floodRegion, getRegion, isBoardFlooded, Cell} from '../GameLogic';
 
 it('floods the region', () => {
   const board = [['blue', 'green'], ['purple', 'red']]
@@ -23,6 +23,11 @@ it('floods the region when cell clicked is further away from seed cell', () => {
   const board = [['blue', 'green'], ['blue', 'red'], ['purple', 'red']]
   const result = [['purple', 'green'], ['purple', 'red'],  ['purple', 'red']]
   expect(floodRegion(new Cell(2,0), board)[0]).toEqual(result)
+});
+
+it('does not create a valid move if user clicks inside flooded region', () => {
+  const board = [['blue', 'green'], ['blue', 'red']]
+  expect(floodRegion(new Cell(1,0), board)[1]).toEqual(false)
 });
 
 it('selects the flooded region', () => {
@@ -48,10 +53,11 @@ it('selects the flooded region with cells not adjacent to seed cell', () => {
 
 it('detects if the board is all the same colour', () => {
   const board = [
-    ['blue', 'blue'],
-    ['blue', 'blue']
+    ['blue', 'blue', 'blue'],
+    ['blue', 'blue', 'blue'],
+    ['blue', 'blue', 'blue']
   ]
-  expect(hasWon(board)).toEqual(true)
+  expect(isBoardFlooded(board)).toEqual(true)
 });
 
 it('detects if the board is not the same colour', () => {
@@ -59,5 +65,5 @@ it('detects if the board is not the same colour', () => {
     ['blue', 'blue'],
     ['blue', 'green']
   ]
-  expect(hasWon(board)).toEqual(false)
+  expect(isBoardFlooded(board)).toEqual(false)
 });

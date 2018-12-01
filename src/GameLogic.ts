@@ -1,4 +1,11 @@
+
 function isValidClick(clickedCell: Cell, board: string[][], floodedRegion: Cell[]): boolean {
+
+  const clickedInsideFloodedRegion = floodedRegion.filter((cell) => cell.equals(clickedCell)).length > 0
+  if(clickedInsideFloodedRegion) {
+    return false
+  }
+
   const {row, column} = clickedCell
   const clickedRegion = getRegion(board, board[row][column], row, column, [])
 
@@ -60,6 +67,9 @@ export class Cell {
 }
 
 export function floodRegion(clickedCell: Cell, board: string[][]): [string[][], boolean] {
+  if(isBoardFlooded(board)) {
+    return [board, false]
+  }
   const floodedRegion = getFloodedRegion(board)
   if(!isValidClick(clickedCell, board, floodedRegion)) {
     return [board, false]
@@ -79,14 +89,18 @@ export function floodRegion(clickedCell: Cell, board: string[][]): [string[][], 
   return [newBoard, true]
 }
 
-export function hasWon(board: string[][]): boolean {
+export function isBoardFlooded(board: string[][]): boolean {
+  const totalCells = board[0].length * board[0].length
+
   const won = colours.map((colour) => {
-    return board.filter((row) => {
-      return row.filter((cellColour) => colour === cellColour)
-    })
+    const winningBoard = board.reduce((winningColours, row) => {
+      const filteredRow = row.filter((cellColour) => cellColour === colour)
+      return winningColours.concat(filteredRow)
+    }, [])
+    return winningBoard.length === totalCells
   })
-  console.log(won)
-  return true
+
+  return won.filter((hasWon) => hasWon).length > 0
 }
 
 // function createInitialColours(): string[][] {
