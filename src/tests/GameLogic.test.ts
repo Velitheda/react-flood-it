@@ -5,24 +5,24 @@ import {floodRegion, getRegion, hasWon, Cell} from '../GameLogic';
 it('floods the region', () => {
   const board = [['blue', 'green'], ['purple', 'red']]
   const result = [['green', 'green'], ['purple', 'red']]
-  expect(floodRegion(new Cell(0,1), board)).toEqual(result)
+  expect(floodRegion(new Cell(0,1), board)[0]).toEqual(result)
 });
 
 it('does not flood when the target cell is not next to the flooded region', () => {
   const board = [['blue', 'green'], ['purple', 'red']]
-  expect(floodRegion(new Cell(1,1), board)).toEqual(board)
+  expect(floodRegion(new Cell(1,1), board)[0]).toEqual(board)
 });
 
 it('floods the region when the target cell belongs to a region touching the flooded region', () => {
   const board = [['blue', 'green'], ['purple', 'green']]
   const result = [['green', 'green'], ['purple', 'green']]
-  expect(floodRegion(new Cell(1,1), board)).toEqual(result)
+  expect(floodRegion(new Cell(1,1), board)[0]).toEqual(result)
 });
 
 it('floods the region when cell clicked is further away from seed cell', () => {
   const board = [['blue', 'green'], ['blue', 'red'], ['purple', 'red']]
   const result = [['purple', 'green'], ['purple', 'red'],  ['purple', 'red']]
-  expect(floodRegion(new Cell(2,0), board)).toEqual(result)
+  expect(floodRegion(new Cell(2,0), board)[0]).toEqual(result)
 });
 
 it('selects the flooded region', () => {

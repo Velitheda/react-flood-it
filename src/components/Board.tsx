@@ -41,13 +41,13 @@ class Board extends React.Component<IBoardProps, IBoardState> {
   }
 
   private onAttempt = (row: number, column: number) => () => {
-    this.updateAttempts(this.state.attempts + 1);
-    const newBoard = floodRegion(new Cell(row, column), this.state.boardColours)
-    this.setState({ boardColours: newBoard })
-  }
+    const result = floodRegion(new Cell(row, column), this.state.boardColours)
+    const succesfulAttempt = result[1]
+    if(succesfulAttempt) {
+      this.setState({ boardColours: result[0] })
+      this.setState({ attempts: this.state.attempts + 1 })
+    }
 
-  private updateAttempts(attempts: number) {
-    this.setState({ attempts: attempts });
   }
 }
 

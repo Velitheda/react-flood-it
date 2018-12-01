@@ -59,13 +59,13 @@ export class Cell {
   }
 }
 
-export function floodRegion(clickedCell: Cell, board: string[][]): string[][] {
+export function floodRegion(clickedCell: Cell, board: string[][]): [string[][], boolean] {
   const floodedRegion = getFloodedRegion(board)
   if(!isValidClick(clickedCell, board, floodedRegion)) {
-    return board
+    return [board, false]
   }
   const newColour = board[clickedCell.row][clickedCell.column]
-  return board.map((row: string[], rowIndex: number) => {
+  const newBoard = board.map((row: string[], rowIndex: number) => {
     return row.map((colour: string, columnIndex: number) => {
       const currentCell = new Cell(rowIndex, columnIndex)
       const inFloodedRegion = floodedRegion.filter((cell) => cell.equals(currentCell)).length > 0
@@ -76,6 +76,7 @@ export function floodRegion(clickedCell: Cell, board: string[][]): string[][] {
       }
     })
   })
+  return [newBoard, true]
 }
 
 export function hasWon(board: string[][]): boolean {
