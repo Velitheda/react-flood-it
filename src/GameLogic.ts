@@ -107,4 +107,4 @@ export function isBoardFlooded(board: string[][]): boolean {
 //   return []
 // }
 
-const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'pink']
+export const colours = ['Crimson', 'CornflowerBlue', 'MediumSeaGreen', 'yellow', 'MediumPurple', 'Sienna']

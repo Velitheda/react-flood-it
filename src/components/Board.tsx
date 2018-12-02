@@ -1,9 +1,6 @@
 import * as React from 'react'
 import './Board.css'
-import {floodRegion, Cell} from '../GameLogic';
-
-
-const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'pink']
+import {floodRegion, colours, Cell} from '../GameLogic';
 
 export interface IBoardProps {
   size: number
