@@ -27,7 +27,7 @@ class Board extends React.Component<IBoardProps, IBoardState> {
       <div className="board">
         <div>
           <h1>Flood-It</h1>
-          <p>Make the whole board the same colour</p>
+          <p>Make the whole board the same colour by clicking on cells next to the colour in the top left corner.</p>
         </div>
 
         <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
