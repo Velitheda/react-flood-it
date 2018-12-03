@@ -103,8 +103,14 @@ export function isBoardFlooded(board: string[][]): boolean {
   return won.filter((hasWon) => hasWon).length > 0
 }
 
-// function createInitialColours(): string[][] {
-//   return []
-// }
+export const createBoardColours: (size: number) => string[][] = (size) =>
+  Array(size).fill('').map(() => boardRow(size))
+
+const boardRow = (size: number) => Array(size).fill('').map(() => randomColour())
+
+const randomColour = () => colours[randomIntFromInterval(0, colours.length - 1)]
+
+const randomIntFromInterval = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1) + min)
 
 export const colours = ['PaleVioletRed', 'CornflowerBlue', 'MediumSeaGreen', 'PaleGoldenRod', 'BlueViolet', 'Teal']

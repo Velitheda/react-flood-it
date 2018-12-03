@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Board.css'
-import {floodRegion, colours, Cell} from '../GameLogic';
+import {floodRegion, createBoardColours, Cell} from '../GameLogic';
 
 export interface IBoardProps {
   size: number
@@ -90,14 +90,3 @@ function ColouredCell({ colour, row, column, onAttempt }: IColouredCellProps) {
   }
   return <td className="cell" style={style} onClick={onAttempt(row, column)}></td>
 }
-
-// helpers
-const createBoardColours: (size: number) => string[][] = (size) =>
-  Array(size).fill('').map(() => boardRow(size))
-
-const boardRow = (size: number) => Array(size).fill('').map(() => randomColour())
-
-const randomColour = () => colours[randomIntFromInterval(0, colours.length - 1)]
-
-const randomIntFromInterval = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1) + min)
