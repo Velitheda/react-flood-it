@@ -113,4 +113,4 @@ const randomColour = () => colours[randomIntFromInterval(0, colours.length - 1)]
 const randomIntFromInterval = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min)
 
-export const colours = ['PaleVioletRed', 'CornflowerBlue', 'MediumSeaGreen', 'PaleGoldenRod', 'BlueViolet', 'Teal']
+export const colours = ['colour1', 'colour2', 'colour3', 'colour4', 'colour5', 'colour6']

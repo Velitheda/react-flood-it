@@ -85,8 +85,5 @@ interface IColouredCellProps {
 }
 
 function ColouredCell({ colour, row, column, onAttempt }: IColouredCellProps) {
-  const style = {
-    backgroundColor: colour
-  }
-  return <td className="cell" style={style} onClick={onAttempt(row, column)}></td>
+  return <td className={"cell " + colour}  onClick={onAttempt(row, column)}></td>
 }
