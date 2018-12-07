@@ -5,29 +5,29 @@ import {floodRegion, getRegion, isBoardFlooded, Cell} from '../GameLogic';
 it('floods the region', () => {
   const board = [['blue', 'green'], ['purple', 'red']]
   const result = [['green', 'green'], ['purple', 'red']]
-  expect(floodRegion(new Cell(0,1), board)[0]).toEqual(result)
+  expect(floodRegion('green', board)[0]).toEqual(result)
 });
 
-it('does not flood when the target cell is not next to the flooded region', () => {
+it('does not flood when the target colour is not next to the flooded region', () => {
   const board = [['blue', 'green'], ['purple', 'red']]
-  expect(floodRegion(new Cell(1,1), board)[0]).toEqual(board)
+  expect(floodRegion('red', board)[0]).toEqual(board)
 });
 
-it('floods the region when the target cell belongs to a region touching the flooded region', () => {
+it('floods the region when the target colour belongs to a region touching the flooded region', () => {
   const board = [['blue', 'green'], ['purple', 'green']]
   const result = [['green', 'green'], ['purple', 'green']]
-  expect(floodRegion(new Cell(1,1), board)[0]).toEqual(result)
+  expect(floodRegion('green', board)[0]).toEqual(result)
 });
 
-it('floods the region when cell clicked is further away from seed cell', () => {
+it('floods the region when colour clicked is further away from seed cell', () => {
   const board = [['blue', 'green'], ['blue', 'red'], ['purple', 'red']]
   const result = [['purple', 'green'], ['purple', 'red'],  ['purple', 'red']]
-  expect(floodRegion(new Cell(2,0), board)[0]).toEqual(result)
+  expect(floodRegion('purple', board)[0]).toEqual(result)
 });
 
-it('does not create a valid move if user clicks inside flooded region', () => {
+it('does not create a valid move if user selects colour from flooded region', () => {
   const board = [['blue', 'green'], ['blue', 'red']]
-  expect(floodRegion(new Cell(1,0), board)[1]).toEqual(false)
+  expect(floodRegion('blue', board)[1]).toEqual(false)
 });
 
 it('selects the flooded region', () => {
@@ -53,17 +53,17 @@ it('selects the flooded region with cells not adjacent to seed cell', () => {
 
 it('detects if the board is all the same colour', () => {
   const board = [
-    ['blue', 'blue', 'blue'],
-    ['blue', 'blue', 'blue'],
-    ['blue', 'blue', 'blue']
+    ['colour1', 'colour1', 'colour1'],
+    ['colour1', 'colour1', 'colour1'],
+    ['colour1', 'colour1', 'colour1']
   ]
   expect(isBoardFlooded(board)).toEqual(true)
 });
 
 it('detects if the board is not the same colour', () => {
   const board = [
-    ['blue', 'blue'],
-    ['blue', 'green']
+    ['colour1', 'colour1'],
+    ['colour1', 'colour2']
   ]
   expect(isBoardFlooded(board)).toEqual(false)
 });

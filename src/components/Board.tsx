@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Board.css'
-import {floodRegion, createBoardColours, colours, Cell} from '../GameLogic';
+import {floodRegion, createBoardColours, colours} from '../GameLogic';
 
 export interface IBoardProps {
   size: number
@@ -33,7 +33,7 @@ class Board extends React.Component<IBoardProps, IBoardState> {
           <button onClick={this.newBoard}>New Board</button>
           <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
           <p className="instructions">Number of attempts: {attempts} / 25</p>
-          <ColourPicker />
+          <ColourPicker onAttempt={this.onAttempt}/>
         </div>
       </div>
     )
@@ -44,8 +44,8 @@ class Board extends React.Component<IBoardProps, IBoardState> {
     this.setState({ attempts: 0 })
   }
 
-  private onAttempt = (row: number, column: number) => () => {
-    const result = floodRegion(new Cell(row, column), this.state.boardColours)
+  private onAttempt = (colour: string) => () => {
+    const result = floodRegion(colour, this.state.boardColours)
     const succesfulAttempt = result[1]
     if(succesfulAttempt) {
       this.setState({ boardColours: result[0] })
@@ -58,12 +58,12 @@ export default Board;
 
 interface ITableBodyProps {
   boardColours: string[][],
-  onAttempt: (row: number, column: number) => () => void
+  onAttempt: (colour: string) => () => void
 }
 
 function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
   const body = boardColours.map((rowColours: string[], i: number) =>
-    <Row colours={rowColours} key={'Row-' + i} row={i} onAttempt={onAttempt}/>
+    <Row colours={rowColours} key={'Row-' + i} onAttempt={onAttempt}/>
   )
   return <table className="tableBody">
     <tbody>{body}</tbody>
@@ -72,32 +72,33 @@ function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
 
 interface IRowProps {
   colours: string[]
-  row: number
-  onAttempt: (row: number, column: number) => () => void
+  onAttempt: (colour: string) => () => void
 }
 
-function Row({ colours, row, onAttempt }: IRowProps) {
+function Row({ colours, onAttempt }: IRowProps) {
   const rowCells = colours.map((colour: string, i: number) =>
-    <ColouredCell colour={colour} key={'ColouredCell-' + i} row={row} column={i} onAttempt={onAttempt}/>
+    <ColouredCell colour={colour} key={'ColouredCell-' + i} onAttempt={onAttempt}/>
   )
   return <tr>{rowCells}</tr>
 }
 
 interface IColouredCellProps {
   colour: string
-  row: number
-  column: number
-  onAttempt: (row: number, column: number) => () => void
+  onAttempt: (colour: string) => () => void
 }
 
-function ColouredCell({ colour, row, column, onAttempt }: IColouredCellProps) {
-  return <td className={"cell " + colour}  onClick={onAttempt(row, column)}></td>
+function ColouredCell({ colour, onAttempt }: IColouredCellProps) {
+  return <td className={"cell " + colour}  onClick={onAttempt(colour)}></td>
 }
 
-function ColourPicker () {
+interface IColourPickerProps {
+  onAttempt: (colour: string) => () => void
+}
+
+function ColourPicker ({ onAttempt }: IColourPickerProps) {
   return <table className="colourPicker"><tbody><tr>
     {colours.map((colour) => {
-      return <td className={"singleColour " + colour}></td>
+      return <td className={"singleColour " + colour} onClick={onAttempt(colour)}></td>
     })}
   </tr></tbody></table>
 }

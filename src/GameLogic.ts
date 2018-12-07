@@ -1,31 +1,42 @@
 
-function isValidClick(clickedCell: Cell, board: string[][], floodedRegion: Cell[]): boolean {
+function isValidColour(colour: string, board: string[][], floodedRegion: Cell[]): boolean {
 
-  const clickedInsideFloodedRegion = floodedRegion.filter((cell) => cell.equals(clickedCell)).length > 0
-  if(clickedInsideFloodedRegion) {
+  const seedColour = board[0][0]
+  if (colour === seedColour) {
     return false
   }
-
-  const {row, column} = clickedCell
-  const clickedRegion = getRegion(board, board[row][column], row, column, [])
-
-  const neighborCells = clickedRegion.reduce(
-    (allNeighbors: Cell[], cell: Cell) => allNeighbors.concat(getNeighborCells(cell)), []
-  )
-  const contains = floodedRegion.filter((cell) =>
-    neighborCells.filter((neighborCell) => neighborCell.equals(cell)).length > 0
-  )
-  return contains.length > 0
+  const colourAdjacentToFloodedRegion = board.filter((row, rowIndex) => row.filter((cell, columnIndex) => {
+    return board[rowIndex][columnIndex] === colour && isCellAdjacentToFloodedRegion(new Cell(rowIndex, columnIndex), floodedRegion)
+  }).length > 0).length > 0
+  return colourAdjacentToFloodedRegion
 }
 
-function getNeighborCells(cell: Cell) {
+// function getNeighborCells(cell: Cell) {
+//   const { row, column } = cell
+//   return [
+//     new Cell(row + 1, column),
+//     new Cell(row - 1, column),
+//     new Cell(row, column + 1),
+//     new Cell(row, column - 1)
+//   ]
+// }
+
+function isCellAdjacentToFloodedRegion(cell: Cell, floodedRegion: Cell[]): boolean {
   const { row, column } = cell
-  return [
-    new Cell(row + 1, column),
-    new Cell(row - 1, column),
-    new Cell(row, column + 1),
-    new Cell(row, column - 1)
-  ]
+  return floodedRegion.map((floodedCell: Cell) => {
+    const {  row: floodedRow, column: floodedColumn } = floodedCell
+    if( row + 1 === floodedRow && column === floodedColumn) {
+      return true
+    } else if ( row - 1 === floodedRow && column === floodedColumn ) {
+      return true
+    } else if ( row === floodedRow && column + 1 === floodedColumn ) {
+      return true
+    } else if ( row === floodedRow && column - 1 === floodedColumn ) {
+      return true
+    } else {
+      return false
+    }
+  }).find((value) => value === true) || false
 }
 
 function getFloodedRegion(board: string[][]): Cell[] {
@@ -66,15 +77,15 @@ export class Cell {
   }
 }
 
-export function floodRegion(clickedCell: Cell, board: string[][]): [string[][], boolean] {
+export function floodRegion(clickedColour: string, board: string[][]): [string[][], boolean] {
   if(isBoardFlooded(board)) {
     return [board, false]
   }
   const floodedRegion = getFloodedRegion(board)
-  if(!isValidClick(clickedCell, board, floodedRegion)) {
+  if(!isValidColour(clickedColour, board, floodedRegion)) {
     return [board, false]
   }
-  const newColour = board[clickedCell.row][clickedCell.column]
+  const newColour = clickedColour
   const newBoard = board.map((row: string[], rowIndex: number) => {
     return row.map((colour: string, columnIndex: number) => {
       const currentCell = new Cell(rowIndex, columnIndex)
@@ -99,7 +110,6 @@ export function isBoardFlooded(board: string[][]): boolean {
     }, [])
     return winningBoard.length === totalCells
   })
-
   return won.filter((hasWon) => hasWon).length > 0
 }
 
