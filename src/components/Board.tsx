@@ -25,14 +25,12 @@ class Board extends React.Component<IBoardProps, IBoardState> {
     const { attempts, boardColours } = this.state
     return (
       <div className="board">
-        <div>
+        <div className="instructions">
           <h1>Flood-It</h1>
           <p>Make the whole board the same colour by clicking on cells next to the colour in the top left corner.</p>
         </div>
-
         <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
-
-        <p>Number of attempts: {attempts} / 25</p>
+        <p className="instructions">Number of attempts: {attempts} / 25</p>
       </div>
     )
   }
@@ -44,7 +42,6 @@ class Board extends React.Component<IBoardProps, IBoardState> {
       this.setState({ boardColours: result[0] })
       this.setState({ attempts: this.state.attempts + 1 })
     }
-
   }
 }
 
