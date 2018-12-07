@@ -46,3 +46,16 @@
 .colour6 {
   background-color: #fecfff;
 }
+
+.board button {
+	background-color: #76a3f5;
+	border-radius: 8px;
+	color: #ffffff;
+	padding: 15px 30px;
+  font-size: 20px;
+  margin: 20px;
+}
+
+.board button:hover {
+	background-color: #4373aa;
+}
