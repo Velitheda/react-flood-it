@@ -1,6 +1,6 @@
 import * as React from 'react'
 import './Board.css'
-import {floodRegion, createBoardColours, Cell} from '../GameLogic';
+import {floodRegion, createBoardColours, colours, Cell} from '../GameLogic';
 
 export interface IBoardProps {
   size: number
@@ -29,9 +29,12 @@ class Board extends React.Component<IBoardProps, IBoardState> {
           <h1>Flood-It</h1>
           <p>Make the whole board the same colour by clicking on cells next to the colour in the top left corner.</p>
         </div>
-        <button onClick={this.newBoard}>New Board</button>
-        <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
-        <p className="instructions">Number of attempts: {attempts} / 25</p>
+        <div className="game">
+          <button onClick={this.newBoard}>New Board</button>
+          <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
+          <p className="instructions">Number of attempts: {attempts} / 25</p>
+          <ColourPicker />
+        </div>
       </div>
     )
   }
@@ -62,7 +65,7 @@ function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
   const body = boardColours.map((rowColours: string[], i: number) =>
     <Row colours={rowColours} key={'Row-' + i} row={i} onAttempt={onAttempt}/>
   )
-  return <table>
+  return <table className="tableBody">
     <tbody>{body}</tbody>
   </table>
 }
@@ -89,4 +92,12 @@ interface IColouredCellProps {
 
 function ColouredCell({ colour, row, column, onAttempt }: IColouredCellProps) {
   return <td className={"cell " + colour}  onClick={onAttempt(row, column)}></td>
+}
+
+function ColourPicker () {
+  return <table className="colourPicker"><tbody><tr>
+    {colours.map((colour) => {
+      return <td className={"singleColour " + colour}></td>
+    })}
+  </tr></tbody></table>
 }

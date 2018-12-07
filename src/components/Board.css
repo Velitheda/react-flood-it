@@ -8,9 +8,13 @@
   margin: 20px;
 }
 
-.board table {
+.board .game {
   margin: 0 auto;
+}
+
+.board .tableBody {
   border-spacing: 1px;
+  margin: 0 auto;
 }
 
 .board td {
@@ -21,6 +25,23 @@
   content: '';
   display: block;
   margin-top: 100%;
+}
+
+.board .game .colourPicker {
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.board .singleColour {
+  width: 100px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.board .singleColour:after {
+  content: '';
+  display: block;
+  margin-top: 100;
 }
 
 .colour1 {
