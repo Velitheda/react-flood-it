@@ -38,6 +38,7 @@ class Board extends React.Component<IBoardProps, IBoardState> {
 
   private newBoard = () => {
     this.setState({ boardColours: createBoardColours(this.props.size) })
+    this.setState({ attempts: 0 })
   }
 
   private onAttempt = (row: number, column: number) => () => {
