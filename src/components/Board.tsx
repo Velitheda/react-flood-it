@@ -32,7 +32,7 @@ class Board extends React.Component<IBoardProps, IBoardState> {
         </div>
         <div className="game">
           <button onClick={this.newBoard}>New Board</button>
-          <TableBody boardColours={boardColours} onAttempt={this.onAttempt}/>
+          <TableBody boardColours={boardColours} onAttempt={this.onAttempt} size={this.props.size}/>
           <p className="instructions">Number of attempts: {attempts} / 25</p>
           <ColourPicker onAttempt={this.onAttempt}/>
         </div>
@@ -58,13 +58,14 @@ class Board extends React.Component<IBoardProps, IBoardState> {
 export default Board;
 
 interface ITableBodyProps {
-  boardColours: Map<string, string>,
+  boardColours: Map<string, string>
   onAttempt: (colour: string) => () => void
+  size: number
 }
 
-function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
-  const body = Range(0, 14).map((i) =>
-    <Row boardColours={boardColours} onAttempt={onAttempt} key={'Row-' + i} row={i} />
+function TableBody ({ boardColours, onAttempt, size }: ITableBodyProps) {
+  const body = Range(0, size).map((i) =>
+    <Row boardColours={boardColours} onAttempt={onAttempt} size={size} key={'Row-' + i} row={i} />
   )
 
   return <table className="tableBody">
@@ -76,10 +77,11 @@ interface IRowProps {
   boardColours: Map<string, string>
   row: number
   onAttempt: (colour: string) => () => void
+  size: number
 }
 
-function Row({ boardColours, onAttempt, row }: IRowProps) {
-  const rowCells = Range(0, 14).map((column: number) => {
+function Row({ boardColours, onAttempt, row, size }: IRowProps) {
+  const rowCells = Range(0, size).map((column: number) => {
     const cellColour = boardColours.get(hashKey(row, column)) || ''
     return <ColouredCell colour={cellColour} key={'ColouredCell-' + row + '-' + column} onAttempt={onAttempt}/>
   })
@@ -100,9 +102,13 @@ interface IColourPickerProps {
 }
 
 function ColourPicker ({ onAttempt }: IColourPickerProps) {
-  return <table className="colourPicker"><tbody><tr>
-    {colours.map((colour) => {
-      return <td className={"singleColour " + colour} onClick={onAttempt(colour)}></td>
-    })}
-  </tr></tbody></table>
+  return <table className="colourPicker">
+    <tbody>
+      <tr>
+        {colours.map((colour) => {
+          return <td className={"singleColour " + colour} onClick={onAttempt(colour)}></td>
+        })}
+      </tr>
+    </tbody>
+  </table>
 }
