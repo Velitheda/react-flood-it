@@ -1,65 +1,55 @@
+import { List, Map, Range } from 'immutable'
 
-function isValidColour(colour: string, board: string[][], floodedRegion: Cell[]): boolean {
+function isValidColour(colour: string, board: Map<string, string>, floodedRegion: Cell[]): boolean {
 
-  const seedColour = board[0][0]
+  const seedColour = board.get('r0c0')
   if (colour === seedColour) {
     return false
   }
-  const colourAdjacentToFloodedRegion = board.filter((row, rowIndex) => row.filter((cell, columnIndex) => {
-    return board[rowIndex][columnIndex] === colour && isCellAdjacentToFloodedRegion(new Cell(rowIndex, columnIndex), floodedRegion)
-  }).length > 0).length > 0
-  return colourAdjacentToFloodedRegion
+  return board.some((value, key, _) => {
+    return (board.get(key) === colour) && isCellAdjacentToFloodedRegion(unhashKey(key), floodedRegion)
+  })
 }
 
-// function getNeighborCells(cell: Cell) {
-//   const { row, column } = cell
-//   return [
-//     new Cell(row + 1, column),
-//     new Cell(row - 1, column),
-//     new Cell(row, column + 1),
-//     new Cell(row, column - 1)
-//   ]
-// }
+function getNeighborCells(cell: Cell): Cell[] {
+  const { row, column } = cell
+  return [
+    new Cell(row + 1, column),
+    new Cell(row - 1, column),
+    new Cell(row, column + 1),
+    new Cell(row, column - 1)
+  ]
+}
 
 function isCellAdjacentToFloodedRegion(cell: Cell, floodedRegion: Cell[]): boolean {
-  const { row, column } = cell
-  return floodedRegion.map((floodedCell: Cell) => {
-    const {  row: floodedRow, column: floodedColumn } = floodedCell
-    if( row + 1 === floodedRow && column === floodedColumn) {
-      return true
-    } else if ( row - 1 === floodedRow && column === floodedColumn ) {
-      return true
-    } else if ( row === floodedRow && column + 1 === floodedColumn ) {
-      return true
-    } else if ( row === floodedRow && column - 1 === floodedColumn ) {
-      return true
-    } else {
-      return false
-    }
-  }).find((value) => value === true) || false
+  return floodedRegion.some((floodedCell: Cell) => {
+    return getNeighborCells(floodedCell).filter((neighbor) => neighbor.equals(cell)).length > 0
+  })
 }
 
-function getFloodedRegion(board: string[][]): Cell[] {
-  const seedColour = board[0][0]
+function getFloodedRegion(board: Map<string, string>): Cell[] {
+  const seedColour = board.get('r0c0') || ''
   return getRegion(board, seedColour, 0, 0, [])
 }
 
-export function getRegion(board: string[][], colour: string, row: number, column: number, result: Cell[]): Cell[] {
-
-  const outOfBounds = !(board[row] && board[row][column])
-  const differentColour = outOfBounds || (board[row][column] !== colour)
-  const alreadyAdded = result.filter((cell) => cell.equals(new Cell(row, column))).length > 0
-
+export function getRegion(board: Map<string, string>, colour: string, row: number, column: number, result: Cell[]): Cell[] {
+  // refactor into another 'isvalid' method
+  const outOfBounds = !board.has(hashKey(row, column))
+  const differentColour = outOfBounds || (board.get(hashKey(row, column)) !== colour)
+  const alreadyAdded = !!result.find((cell) => cell.equals(new Cell(row, column)))
+  //
   if( outOfBounds || differentColour || alreadyAdded ) {
     return result
   }
-
   result.push(new Cell(row, column))
+
+//neighborCells.map
   const bottomCells = getRegion(board, colour, row + 1, column, result)
   const topCells = getRegion(board, colour, row - 1, column, result)
   const rightCells = getRegion(board, colour, row, column + 1, result)
   const leftCells = getRegion(board, colour, row, column - 1, result)
 
+// create a 'merge and filter' method
   const nonDistinct = result.concat(rightCells).concat(leftCells).concat(topCells).concat(bottomCells)
   return nonDistinct.filter((cell, index, array) => array.indexOf(cell) === index)
 }
@@ -77,50 +67,68 @@ export class Cell {
   }
 }
 
-export function floodRegion(clickedColour: string, board: string[][]): [string[][], boolean] {
+export function floodRegion(clickedColour: string, board: Map<string, string>): [Map<string, string>, boolean] {
   if(isBoardFlooded(board)) {
     return [board, false]
   }
-  const floodedRegion = getFloodedRegion(board)
+  const floodedRegion: Cell[] = getFloodedRegion(board)
   if(!isValidColour(clickedColour, board, floodedRegion)) {
     return [board, false]
   }
-  const newColour = clickedColour
-  const newBoard = board.map((row: string[], rowIndex: number) => {
-    return row.map((colour: string, columnIndex: number) => {
-      const currentCell = new Cell(rowIndex, columnIndex)
-      const inFloodedRegion = floodedRegion.filter((cell) => cell.equals(currentCell)).length > 0
-      if (inFloodedRegion) {
-        return newColour
-      } else {
-        return board[rowIndex][columnIndex]
-      }
-    })
+  const newBoard = board.map((value: string, key: string) => {
+    const currentCell = unhashKey(key)
+    const inFloodedRegion = floodedRegion.filter((cell) =>
+      cell.equals(currentCell)).length > 0
+    if (inFloodedRegion) {
+      return clickedColour
+    } else {
+      return value
+    }
   })
   return [newBoard, true]
 }
 
-export function isBoardFlooded(board: string[][]): boolean {
-  const totalCells = board[0].length * board[0].length
-
-  const won = colours.map((colour) => {
-    const winningBoard = board.reduce((winningColours, row) => {
-      const filteredRow = row.filter((cellColour) => cellColour === colour)
-      return winningColours.concat(filteredRow)
-    }, [])
-    return winningBoard.length === totalCells
-  })
-  return won.filter((hasWon) => hasWon).length > 0
+export function isBoardFlooded(board: Map<string, string>): boolean {
+  return coloursList.some((colour) =>
+    board.valueSeq().every((cellColour) => cellColour === colour)
+  )
 }
 
-export const createBoardColours: (size: number) => string[][] = (size) =>
-  Array(size).fill('').map(() => boardRow(size))
+/*
+hashing map keys
+ */
+export function hashKey (row: number, column: number): string {
+  return 'r' + row + 'c' + column
+}
 
-const boardRow = (size: number) => Array(size).fill('').map(() => randomColour())
+export function hashKeyCell (cell: Cell): string {
+  const { row, column } = cell
+  return hashKey(row, column)
+}
 
-const randomColour = () => colours[randomIntFromInterval(0, colours.length - 1)]
+export function unhashKey (key: string): Cell {
+  const matched = key.match(/r(\d+)c(\d+)/) || []
+  return new Cell(Number.parseInt(matched[1] || '-1'), Number.parseInt( matched[2] || '-1'))
+}
+
+/*
+creating the board
+ */
+
+ export const createBoardColours: (size: number) => Map<string, string> = (size) => {
+   const mapBody: string[][] = Range(0, size).flatMap((i) =>
+      Range(0, size).map((j) =>
+      [hashKey(i, j), randomColour()]
+   )).toArray()
+// Typescript needs some help with the type here in order to create the Map properly
+   return Map(mapBody.map(kv => [kv[0], kv[1]] as [string, string]))
+ }
+
+const randomColour: () => string = () => colours[randomIntFromInterval(0, colours.length - 1)]
 
 const randomIntFromInterval = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1) + min)
 
-export const colours = ['colour1', 'colour2', 'colour3', 'colour4', 'colour5', 'colour6']
+export const colours: string[] = ['colour1', 'colour2', 'colour3', 'colour4', 'colour5', 'colour6']
+
+const coloursList: List<string> = List(colours)

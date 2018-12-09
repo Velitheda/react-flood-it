@@ -1,6 +1,7 @@
 import * as React from 'react'
+import { Map, Range } from 'immutable'
 import './Board.css'
-import {floodRegion, createBoardColours, colours} from '../GameLogic';
+import {floodRegion, createBoardColours, colours, hashKey} from '../GameLogic';
 
 export interface IBoardProps {
   size: number
@@ -8,7 +9,7 @@ export interface IBoardProps {
 
 interface IBoardState {
   attempts: number
-  boardColours: string[][]
+  boardColours: Map<string, string>
 }
 
 class Board extends React.Component<IBoardProps, IBoardState> {
@@ -57,28 +58,31 @@ class Board extends React.Component<IBoardProps, IBoardState> {
 export default Board;
 
 interface ITableBodyProps {
-  boardColours: string[][],
+  boardColours: Map<string, string>,
   onAttempt: (colour: string) => () => void
 }
 
 function TableBody ({ boardColours, onAttempt }: ITableBodyProps) {
-  const body = boardColours.map((rowColours: string[], i: number) =>
-    <Row colours={rowColours} key={'Row-' + i} onAttempt={onAttempt}/>
+  const body = Range(0, 14).map((i) =>
+    <Row boardColours={boardColours} onAttempt={onAttempt} key={'Row-' + i} row={i} />
   )
+
   return <table className="tableBody">
     <tbody>{body}</tbody>
   </table>
 }
 
 interface IRowProps {
-  colours: string[]
+  boardColours: Map<string, string>
+  row: number
   onAttempt: (colour: string) => () => void
 }
 
-function Row({ colours, onAttempt }: IRowProps) {
-  const rowCells = colours.map((colour: string, i: number) =>
-    <ColouredCell colour={colour} key={'ColouredCell-' + i} onAttempt={onAttempt}/>
-  )
+function Row({ boardColours, onAttempt, row }: IRowProps) {
+  const rowCells = Range(0, 14).map((column: number) => {
+    const cellColour = boardColours.get(hashKey(row, column)) || ''
+    return <ColouredCell colour={cellColour} key={'ColouredCell-' + row + '-' + column} onAttempt={onAttempt}/>
+  })
   return <tr>{rowCells}</tr>
 }
 
